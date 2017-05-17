@@ -3,7 +3,8 @@ import { gql, graphql } from 'react-apollo';
 
 class App extends Component {
   render() {
-    const { data: { loading, people } } = this.props;
+    const { error, loading, loadingMore, loadMorePeople, people } = this.props;
+
     return (
       <main>
         <header>
@@ -20,16 +21,26 @@ class App extends Component {
             Currently the schema just serves a list of people with names and ids.
           </p>
         </header>
+        {
+          error && (
+            <h2 style={{color: 'red'}}>Error</h2>
+          )
+        }
         {loading ? (
           <p>Loading…</p>
         ) : (
-          <ul>
-            {people.map(person => (
-              <li key={person.id}>
-                {person.name}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <ol>
+              {people.map(person => (
+                <li key={person.id}>
+                  {person.name}
+                </li>
+              ))}
+            </ol>
+            <button
+              disabled={loadingMore}
+              onClick={loadMorePeople}>{ !loadingMore ? 'Fetch more' : 'Loading…' }</button>
+          </div>
         )}
       </main>
     );
@@ -37,10 +48,45 @@ class App extends Component {
 }
 
 export default graphql(
-  gql`{
-    people {
+  gql`
+  query ($cursor: Int, $limit: Int) {
+    people (cursor: $cursor, limit: $limit) {
       id
       name
     }
-  }`,
+  }
+  `,
+  {
+    options: {
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        cursor: 0,
+        limit: 10,
+      }
+    },
+    props: ({data: {people, fetchMore, networkStatus, ...props}}) => ({
+      ...props,
+      networkStatus,
+      people,
+      loading: networkStatus === 1,
+      loadingMore: networkStatus === 3,
+      loadMorePeople () {
+        return fetchMore({
+          updateQuery: (previousQuery, {fetchMoreResult}) => {
+            if (fetchMoreResult.people === undefined) {
+              return previousQuery;
+            }
+
+            return {
+              people: [
+                ...previousQuery.people,
+                ...fetchMoreResult.people,
+              ],
+            };
+          },
+          variables: {cursor: people.length},
+        });
+      },
+    }),
+  },
 )(App)
