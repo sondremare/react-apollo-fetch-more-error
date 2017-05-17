@@ -21,7 +21,7 @@ Visit `http://localhost:3000/`, then:
 
 - Press **Fetch more**
 - Block incoming connections from `http://localhost:3001/graphql`
-- Press **Fetch more** one more time, an error is shown, but already loaded content remains (attended behaviour)
+- Press **Fetch more** one more time, an error is shown, but already loaded content remains (expected behaviour)
 - Unblock incoming connections
 - Finally, press **Fetch more** and you'll see that the error remains and the new content is not added to the list. Although you can see the request has returned new content successfully (via the network panel).
 
