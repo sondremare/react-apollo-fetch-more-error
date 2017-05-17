@@ -10,6 +10,21 @@ To get started writing your error case just clone this repository to your GitHub
 
 To make changes in the GraphQL schema make sure to look at the `./src/graphql` folder where we define a GraphQL schema using [GraphQL.js][3] which will run in the browser.
 
+## Demo intructions
+
+```bash
+yarn
+yarn start
+```
+
+Visit `http://localhost:3000/`, then:
+
+- Press *Fetch more*
+- Block incoming connections from `http://localhost:3001/graphql`
+- Press *Fetch more* one more time, an error is shown, but already loaded content remains (attended behaviour)
+- Unblock incoming connections
+- Finally, press *Fetch more* and you'll see that the error remains and the new content is not added to the list. Although you can see the request has returned new content successfully (via the network panel).
+
 [1]: https://github.com/apollographql/apollo-client
 [2]: https://github.com/facebookincubator/create-react-app
 [3]: http://graphql.org/graphql-js/
